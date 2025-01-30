@@ -114,7 +114,7 @@ macro_rules! implementation_no_std_net {
                         unsafe { self.0.addr.ipv6.into() },
                         self.0.port,
                         0,
-                        self.0.netif.into(),
+                        0,
                     )
                     .into(),
 
