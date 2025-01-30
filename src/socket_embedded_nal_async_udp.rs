@@ -77,9 +77,10 @@ pub struct UnconnectedUdpSocket {
 }
 
 macro_rules! implementation_module {
-    ($ena_crate:ident) => {
+    ($ena_crate:ident, $addr_crate:ident) => {
 
     use super::*;
+    use $addr_crate::SocketAddr;
 
     impl $ena_crate::UdpStack for UdpStack {
         type Error = NumericError;
@@ -92,9 +93,9 @@ macro_rules! implementation_module {
 
         async fn connect_from(
             &self,
-            local: $ena_crate::SocketAddr,
-            remote: $ena_crate::SocketAddr,
-        ) -> Result<($ena_crate::SocketAddr, Self::Connected), Self::Error> {
+            local: SocketAddr,
+            remote: SocketAddr,
+        ) -> Result<(SocketAddr, Self::Connected), Self::Error> {
             let mut socket = self.create(Some(local.into()), Some(remote.into()), 0)?;
 
             let final_local = get_local(&mut socket)?;
@@ -109,8 +110,8 @@ macro_rules! implementation_module {
 
         async fn bind_single(
             &self,
-            local: $ena_crate::SocketAddr,
-        ) -> Result<($ena_crate::SocketAddr, Self::UniquelyBound), Self::Error> {
+            local: SocketAddr,
+        ) -> Result<(SocketAddr, Self::UniquelyBound), Self::Error> {
             let mut socket = self.create(Some(local.into()), None, 0)?;
 
             let final_local = get_local(&mut socket)?;
@@ -120,7 +121,7 @@ macro_rules! implementation_module {
 
         async fn bind_multiple(
             &self,
-            local: $ena_crate::SocketAddr,
+            local: SocketAddr,
         ) -> Result<Self::MultiplyBound, Self::Error> {
             let socket = self.create(Some(local.into()), None, 0)?;
 
@@ -161,8 +162,8 @@ macro_rules! implementation_module {
 
         async fn send(
             &mut self,
-            local: $ena_crate::SocketAddr,
-            remote: $ena_crate::SocketAddr,
+            local: SocketAddr,
+            remote: SocketAddr,
             data: &[u8],
         ) -> Result<(), Self::Error> {
             let remote: UdpEp = remote.into();
@@ -190,8 +191,8 @@ macro_rules! implementation_module {
         ) -> Result<
             (
                 usize,
-                $ena_crate::SocketAddr,
-                $ena_crate::SocketAddr,
+                SocketAddr,
+                SocketAddr,
             ),
             Self::Error,
         > {
@@ -211,8 +212,8 @@ macro_rules! implementation_module {
         type Output = Result<
             (
                 usize,
-                $ena_crate::SocketAddr,
-                $ena_crate::SocketAddr,
+                SocketAddr,
+                SocketAddr,
             ),
             NumericError,
         >;
@@ -347,5 +348,10 @@ macro_rules! implementation_module {
 }
 
 mod implementation_0_7 {
-    implementation_module! {embedded_nal_async_0_7}
+    implementation_module! {embedded_nal_async_0_7, embedded_nal_async_0_7}
+}
+
+mod implementation_0_8 {
+    use core::net;
+    implementation_module! {embedded_nal_async_0_8, net}
 }

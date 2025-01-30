@@ -147,3 +147,9 @@ mod implementation_no_std_net_0_5 {
 mod implementation_no_std_net_0_6 {
     implementation_no_std_net! {no_std_net_0_6}
 }
+
+#[cfg(feature = "with_embedded_nal_async")]
+mod implementation_core_net {
+    use core::net;
+    implementation_no_std_net! {net}
+}
